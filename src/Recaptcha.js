@@ -18,6 +18,8 @@ class Recaptcha extends React.Component {
     sitekey: PropTypes.string.isRequired,
     callback: PropTypes.func.isRequired,
     expiredCallback: PropTypes.func.isRequired,
+    onLoadErrorCallback: PropTypes.func,
+    onLoadCallback: PropTypes.func,
 
     // Options
     className: PropTypes.string,
@@ -32,7 +34,13 @@ class Recaptcha extends React.Component {
   };
 
   componentDidMount() {
-    const { locale, callback, expiredCallback } = this.props;
+    const {
+      locale,
+      callback,
+      expiredCallback,
+      onLoadErrorCallback,
+      onLoadCallback,
+    } = this.props;
 
     // 1. Async lazy load
     const head = document.head || document.getElementsByTagName('head')[0];
@@ -42,9 +50,16 @@ class Recaptcha extends React.Component {
     script.type = 'text/javascript';
     script.async = true;
     script.defer = true;
-    script.onerror = oError => {
-      throw new URIError(`The script ${oError.target.src} is not accessible.`);
-    };
+    if (onLoadCallback) {
+      script.onload = onLoadCallback;
+    }
+    script.onerror =
+      onLoadErrorCallback ||
+      (oError => {
+        throw new URIError(
+          `The script ${oError.target.src} is not accessible.`,
+        );
+      });
     head.appendChild(script);
 
     // 2. Expose callback function to window object

@@ -6,6 +6,8 @@ declare module 'react-grecaptcha' {
     sitekey: string;
     callback: Function;
     expiredCallback: Function;
+    onLoadErrorCallback?: Function;
+    onLoadCallback?: Function;
     className?: string;
     invisible?: boolean;
     locale?: string;
